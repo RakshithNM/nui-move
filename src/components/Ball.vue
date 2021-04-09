@@ -27,8 +27,8 @@ export default defineComponent({
 
     let grammar = `#JSGF V1.0; grammar action; public <action> = up | down |
     right | left ;`
-    let recognition = new webkitSpeechRecognition();
-    let speechRecognitionList = new webkitSpeechGrammarList();
+    let recognition = new (window as any).webkitSpeechRecognition();
+    let speechRecognitionList = new (window as any).webkitSpeechGrammarList();
 
     const reset = () => {
       recognizing.value = false;
@@ -55,7 +55,7 @@ export default defineComponent({
     reset();
     recognition.onend = reset();
 
-    recognition.onresult = function(event) {
+    recognition.onresult = function(event: SpeechRecognitionEvent) {
       for(let i = event.resultIndex; i < event.results.length; ++i) {
         if(event.results[i].isFinal) {
           console.log(event);
