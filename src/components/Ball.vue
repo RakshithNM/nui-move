@@ -1,7 +1,7 @@
 <template>
   <main>
     <h1>{{ msg }}</h1>
-    <p>Give browser the permission to use the microphone and say "up", "down",
+    <p>Click the start button, give browser the permission to use the microphone and say "up", "down",
     "left", "right" to control the movement of the ball</p>
     <div :class="animationclass"></div>
     <p>{{ diagnostic }}</p>
