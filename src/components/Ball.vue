@@ -127,7 +127,14 @@ div::after{
   filter: blur(10px);
 }
 
+div:hover {
+  cursor: pointer;
+  transform: scale(0.9);
+  transition: transform 0.3s ease-in;
+}
+
 button {
+  cursor: pointer;
   margin-top: 4rem;
   color: rebeccapurple;
 }
