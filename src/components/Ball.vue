@@ -54,7 +54,7 @@ export default defineComponent({
     recognition.interimResults = true;
     recognition.maxAlternatives = 1;
     reset();
-    recognition.onend = reset();
+    recognition.onend = recognition.start;
 
     recognition.onresult = function(event: SpeechRecognitionEvent) {
       for(let i = event.resultIndex; i < event.results.length; ++i) {
