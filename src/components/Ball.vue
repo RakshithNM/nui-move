@@ -1,8 +1,8 @@
 <template>
   <main>
     <h1>{{ msg }}</h1>
-    <p>Click the start button, give browser the permission to use the microphone and say "up", "down",
-    "left", "right" to control the movement of the ball</p>
+    <p>Click the start button, give browser the permission to use the microphone and say "UP" or "DOWN" or
+    "LEFT" or "RIGHT" to control the movement of the ball</p>
     <div :class="animationclass"></div>
     <p class="diagnostic">{{ diagnostic }}</p>
     <button @click="toggleStartStop">{{ recognizing ? "STOP" : "START" }}</button>
@@ -61,6 +61,9 @@ export default defineComponent({
         if(event.results[i].isFinal) {
           console.log(event);
           let action = event.results[i][0].transcript;
+          if(action.split(" ").length > 1) {
+            action = action.split(" ")[0];
+          }
           let possibleMovements = ['up', 'down', 'right', 'left']
           if(possibleMovements.includes(action.trim().toLowerCase())) {
             diagnostic.value = `moving ${action}`;
