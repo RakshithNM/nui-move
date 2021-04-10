@@ -4,7 +4,7 @@
     <p>Click the start button, give browser the permission to use the microphone and say "up", "down",
     "left", "right" to control the movement of the ball</p>
     <div :class="animationclass"></div>
-    <p>{{ diagnostic }}</p>
+    <p class="diagnostic">{{ diagnostic }}</p>
     <button @click="toggleStartStop">{{ recognizing ? "STOP" : "START" }}</button>
   </main>
 </template>
@@ -25,12 +25,13 @@ export default defineComponent({
     const diagnostic = ref("")
     const recognizing = ref(false)
 
-    let grammar = `#JSGF V1.0; grammar action; public <action> = up | down |
-    right | left ;`
+    let grammar = `#JSGF V1.0; grammar action; public <action> = up | down | right | left ;`
     let recognition = new (window as any).webkitSpeechRecognition();
     let speechRecognitionList = new (window as any).webkitSpeechGrammarList();
 
     const reset = () => {
+      animationclass.value = "center";
+      diagnostic.value = "";
       recognizing.value = false;
     }
 
@@ -60,12 +61,16 @@ export default defineComponent({
         if(event.results[i].isFinal) {
           console.log(event);
           let action = event.results[i][0].transcript;
-          diagnostic.value = `moving ${action}`;
-          animationclass.value = action;
+          let possibleMovements = ['up', 'down', 'right', 'left']
+          if(possibleMovements.includes(action.trim().toLowerCase())) {
+            diagnostic.value = `moving ${action}`;
+            animationclass.value = action;
+          } else {
+            reset();
+          }
         }
       }
     }
-
 
     return { 
       animationclass,
@@ -90,11 +95,37 @@ div {
   border-radius: 50%;
   width: 50vmin;
   aspect-ratio: 9/9;
-  background-color: orangered;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: linear-gradient(#f00202 0%, #bd0404 10%, #7d0404 50%, #4a0202 100%);
+  position: relative;
+}
+
+div::before{
+  content: "";
+  width: 40vmin;
+  aspect-ratio: 9/9;
+  background: linear-gradient(#f06060 0%, #a30505 60%, #4d0202 100%);
+
+  border-radius: 50%;
+  filter: blur(18px);
+}
+
+div::after{
+  content: '';
+  position: absolute;
+  width: 100%;
+  height: 60px;
+  border-radius: 50%;
+  background: rgba(182, 179, 179, 0.6);
+  bottom: -60px;
+  z-index: -1;
+  filter: blur(10px);
 }
 
 button {
-  margin-top: 1rem;
+  margin-top: 4rem;
   color: rebeccapurple;
 }
 
@@ -109,12 +140,17 @@ button {
 }
 
 .right {
-  transform: translateX(50px);
+  transform: translateX(150px);
   transition: all 0.3s ease-in;
 }
 
 .left {
-  transform: translateX(-50px);
+  transform: translateX(-150px);
+  transition: all 0.3s ease-in;
+}
+
+.center {
+  transform: translate(0px);
   transition: all 0.3s ease-in;
 }
 </style>
