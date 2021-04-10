@@ -1,10 +1,10 @@
 <template>
   <main>
     <h1>{{ msg }}</h1>
-    <p>Click the start button, give browser the permission to use the microphone and say "UP" or "DOWN" or
-    "LEFT" or "RIGHT" to control the movement of the ball</p>
+    <p><strong>Click the start button, give browser the permission to use the microphone and say "UP" or "DOWN" or
+    "LEFT" or "RIGHT" to control the movement of the ball</strong></p>
     <div :class="animationclass"></div>
-    <p class="diagnostic">{{ diagnostic }}</p>
+    <p class="diagnostic"><strong>{{ diagnostic }}</strong></p>
     <button @click="toggleStartStop">{{ recognizing ? "STOP" : "START" }}</button>
   </main>
 </template>
@@ -68,6 +68,8 @@ export default defineComponent({
           if(possibleMovements.includes(action.trim().toLowerCase())) {
             diagnostic.value = `moving ${action}`;
             animationclass.value = action;
+          } else {
+            diagnostic.value = `you said something else or browser has no confidence(this can happen if you use a bluetooth mic) that you said the one of the right words(up, down, right, left)`
           }
         }
       }
@@ -127,8 +129,12 @@ div::after{
 
 button {
   cursor: pointer;
-  margin-top: 4rem;
+  margin-top: 2rem;
   color: rebeccapurple;
+}
+
+.diagnostic {
+  margin-top: 8rem;
 }
 
 .up {
