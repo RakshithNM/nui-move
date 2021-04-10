@@ -60,7 +60,7 @@ export default defineComponent({
       for(let i = event.resultIndex; i < event.results.length; ++i) {
         if(event.results[i].isFinal) {
           console.log(event);
-          let action = event.results[i][0].transcript;
+          let action = event.results[i][0].transcript.trim();
           if(action.split(" ").length > 1) {
             action = action.split(" ")[0];
           }
