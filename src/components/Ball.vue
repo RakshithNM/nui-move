@@ -37,7 +37,8 @@ export default defineComponent({
 
     const toggleStartStop = () => {
       if(recognizing.value) {
-        recognition.stop();
+        recognition.abort();
+        console.log("stopped recognition")
         reset();
       }
       else {
