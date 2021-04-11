@@ -1,5 +1,5 @@
 <template>
-  <Ball msg="Speech Recognition Ball Animation" />
+  <Ball msg="Speech Recognition Ball Control" />
 </template>
 
 <script lang="ts">
