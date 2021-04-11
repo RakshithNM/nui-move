@@ -1,11 +1,14 @@
 <template>
-  <main>
+  <main v-if="isSupported">
     <h1>{{ msg }}</h1>
     <p><strong>Click the start button, give browser the permission to use the microphone and say "UP" or "DOWN" or
     "LEFT" or "RIGHT" to control the movement of the ball</strong></p>
     <div :class="animationclass"></div>
     <p class="diagnostic"><strong>{{ diagnostic }}</strong></p>
-    <button @click="toggleStartStop">{{ recognizing ? "STOP" : "START" }}</button>
+    <button v-if="!recognizing" @click="start">START</button>
+  </main>
+  <main v-else>
+    <p><strong>Speech Recognition Feature is not supported by this browser, consider updating to the latest chrome and try using it on a computer.</strong></p>
   </main>
 </template>
 
@@ -24,63 +27,67 @@ export default defineComponent({
     const animationclass = ref("")
     const diagnostic = ref("")
     const recognizing = ref(false)
+    const isSupported = ref(false)
+    let start;
 
-    let grammar = `#JSGF V1.0; grammar action; public <action> = up | down | right | left ;`
-    let recognition = new (window as any).webkitSpeechRecognition();
-    let speechRecognitionList = new (window as any).webkitSpeechGrammarList();
+    if((window as any).Modernizr.speechrecognition) {
+      isSupported.value = true;
+      let grammar = `#JSGF V1.0; grammar action; public <action> = up | down | right | left ;`
+      let recognition = new (window as any).webkitSpeechRecognition();
+      let speechRecognitionList = new (window as any).webkitSpeechGrammarList();
 
-    const reset = () => {
-      animationclass.value = "center";
-      diagnostic.value = "";
-      recognizing.value = false;
-    }
-
-    const toggleStartStop = () => {
-      if(recognizing.value) {
-        recognition.abort();
-        console.log("stopped recognition")
-        reset();
+      const reset = () => {
+        animationclass.value = "center";
+        diagnostic.value = "";
+        recognizing.value = false;
       }
-      else {
-        recognition.start();
-        console.log("started recognition")
-        recognizing.value = true;
+
+      start = () => {
+        if(recognizing.value == false) {
+          recognition.start();
+          diagnostic.value = `Say UP DOWN RIGHT or LEFT to control the ball`;
+          console.log("started recognition")
+          recognizing.value = true;
+        }
       }
-    }
 
-    speechRecognitionList.addFromString(grammar, 1);
-    recognition.grammars = speechRecognitionList;
-    recognition.continuous = true;
-    recognition.lang = 'en-US';
-    recognition.interimResults = true;
-    recognition.maxAlternatives = 1;
-    reset();
-    recognition.onend = recognition.start;
+      speechRecognitionList.addFromString(grammar, 1);
+      recognition.grammars = speechRecognitionList;
+      recognition.continuous = true;
+      recognition.lang = 'en-US';
+      recognition.interimResults = true;
+      recognition.maxAlternatives = 1;
+      reset();
+      recognition.onend = recognition.start;
 
-    recognition.onresult = function(event: SpeechRecognitionEvent) {
-      for(let i = event.resultIndex; i < event.results.length; ++i) {
-        if(event.results[i].isFinal) {
-          console.log(event);
-          let action = event.results[i][0].transcript.trim();
-          if(action.split(" ").length > 1) {
-            action = action.split(" ")[0];
-          }
-          let possibleMovements = ['up', 'down', 'right', 'left']
-          if(possibleMovements.includes(action.trim().toLowerCase())) {
-            diagnostic.value = `moving ${action}`;
-            animationclass.value = action;
-          } else {
-            diagnostic.value = `you said something else or browser has no confidence(this can happen if you use a bluetooth mic) that you said the one of the right words(up, down, right, left)`
+      recognition.onresult = function(event: SpeechRecognitionEvent) {
+        for(let i = event.resultIndex; i < event.results.length; ++i) {
+          if(event.results[i].isFinal) {
+            console.log(event);
+            let action = event.results[i][0].transcript.trim();
+            if(action.split(" ").length > 1) {
+              action = action.split(" ")[0];
+            }
+            let possibleMovements = ['up', 'down', 'right', 'left']
+            if(possibleMovements.includes(action.trim().toLowerCase())) {
+              diagnostic.value = `moving ${action}`;
+              animationclass.value = action;
+            } else {
+              diagnostic.value = `you said something else or browser has no confidence(this can happen if you use a bluetooth mic) that you said the one of the right words(up, down, right, left)`
+            }
           }
         }
       }
+    } else {
+      isSupported.value = false;
     }
 
     return { 
       animationclass,
       diagnostic,
       recognizing,
-      toggleStartStop
+      start,
+      isSupported
     }
   }
 })
