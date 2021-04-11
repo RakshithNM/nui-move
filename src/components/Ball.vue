@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'Ball',
@@ -61,9 +61,9 @@ export default defineComponent({
       recognition.onend = recognition.start;
 
       recognition.onresult = function(event: SpeechRecognitionEvent) {
+        console.log(event);
         for(let i = event.resultIndex; i < event.results.length; ++i) {
           if(event.results[i].isFinal) {
-            console.log(event);
             let action = event.results[i][0].transcript.trim();
             if(action.split(" ").length > 1) {
               action = action.split(" ")[0];
