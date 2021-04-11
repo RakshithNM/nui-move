@@ -4,7 +4,7 @@
     <p><strong>Click the start button, give browser the permission to use the microphone and say "UP" or "DOWN" or
     "LEFT" or "RIGHT" to control the movement of the ball</strong></p>
     <div :class="animationclass"></div>
-    <p class="diagnostic"><strong>{{ diagnostic }}</strong></p>
+    <p class="diagnostic"><strong v-html="diagnostic"></strong></p>
     <button v-if="!recognizing" @click="start">START</button>
   </main>
   <main v-else>
@@ -13,7 +13,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted, ref } from 'vue'
+import { defineComponent, ref } from 'vue'
 
 export default defineComponent({
   name: 'Ball',
@@ -61,9 +61,9 @@ export default defineComponent({
       recognition.onend = recognition.start;
 
       recognition.onresult = function(event: SpeechRecognitionEvent) {
+        console.log(event);
         for(let i = event.resultIndex; i < event.results.length; ++i) {
           if(event.results[i].isFinal) {
-            console.log(event);
             let action = event.results[i][0].transcript.trim();
             if(action.split(" ").length > 1) {
               action = action.split(" ")[0];
@@ -73,7 +73,7 @@ export default defineComponent({
               diagnostic.value = `moving ${action}`;
               animationclass.value = action;
             } else {
-              diagnostic.value = `you said something else or browser has no confidence(this can happen if you use a bluetooth mic) that you said the one of the right words(up, down, right, left)`
+              diagnostic.value = `you said <mark>${action}</mark> or browser has no confidence(this can happen if you use a bluetooth mic) that you said the one of the right words(up, down, right, left)`
             }
           }
         }
